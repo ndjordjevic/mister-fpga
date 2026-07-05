@@ -45,11 +45,12 @@ programs the FPGA fabric on demand per core.
 
 | Resource | URL | Notes |
 |----------|-----|-------|
-| **Terasic DE10-Nano** (official) | https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=167&No=1046&PartNo=5#contents | Official product page. Spec: Cyclone V 5CSEBA6U23I7, 110K LE, DDR3, HDMI, ETH |
+| **Terasic DE10-Nano** (official) | https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=167&No=1046&PartNo=1#contents | Official product page — Overview tab. Spec: Cyclone V 5CSEBA6U23I7, 110K LE, DDR3, HDMI, ETH |
 | DE10-Nano — MiSTer FPGA Forum | https://misterfpga.org/viewtopic.php?t=3397 | Community thread on hardware specifics |
 | What components do I need? (Forum) | https://misterfpga.org/viewtopic.php?t=3753 | Community answer to full setup BOM |
 | Multisystem all-in-one motherboard | https://github.com/Heber-co-uk/Multisystem | Heber Ltd PCB integrating DE10-Nano + all peripherals into one board |
 | MiSTer Floppy (Minimig core) | https://mister.robsmithdev.co.uk/get | Using real floppy drives with MiSTer's Amiga Minimig-AGA core |
+| DE10-Nano top layout image (official) | https://www.terasic.com.tw/attachment/archive/1046/image/layout_top.jpg | Terasic's official board photo/diagram — ports, headers, chip positions |
 
 ---
 
