@@ -9,6 +9,53 @@ https://mister-devel.github.io/MkDocs_MiSTer/
 
 ---
 
+## DE10-Nano Port Reference
+
+Before buying anything, know exactly what's on the board. Verified against the Terasic
+DE10-Nano User Manual and Intel's Get Started Guide.
+
+### 🔌 External I/O connectors (the "real" ports)
+
+| Connector | Type | Purpose | MiSTer relevance |
+|-----------|------|---------|------------------|
+| **DC power jack** | 5V barrel, 5.5mm OD / 2.1mm ID, **center-positive** | Main power input | Your 5V/4A+ PSU goes here (§5) |
+| **USB OTG** | **Micro-USB AB (female)** | The board's *only* USB host port | ⭐ Keyboard/hub/gamepads connect here — needs OTG adapter or hub board (§2) |
+| **USB UART / Blaster II** | **Mini-USB B (female)** | On-board USB-Blaster II (JTAG) + UART console | Programming/debug **only** — *not* for peripherals |
+| **HDMI TX** | Full-size **HDMI Type-A** | Video + audio out (ADV7513, DVI 1.0 / HDCP 1.4, up to 1080p) | Default MiSTer video (§4) |
+| **Gigabit Ethernet** | **RJ45** (KSZ9031 PHY, 10/100/1000) | Wired networking | Updates, ROM transfer, NTP sync (§16) |
+| **microSD socket** | Push-push micro-SD (HPS side) | Boot media / storage | Holds OS, cores, ROMs (§1) |
+
+### 📐 Expansion headers (board-to-board / FPGA fabric)
+
+| Header | Pins | Purpose | MiSTer relevance |
+|--------|------|---------|------------------|
+| **GPIO-0** | 2×20 (40-pin) | General FPGA I/O | ⭐ **SDRAM board** plugs in here (§6) |
+| **GPIO-1** | 2×20 (40-pin) | General FPGA I/O | ⭐ Used by **IO / A-V boards** (§10) |
+| **Arduino Uno R3 header** | Uno-compatible set | Arduino shield compat. (FPGA-connected) | Used by some IO/analog boards |
+| **ADC / Analog-in header** | 2×5 (10-pin) | 8-channel, 12-bit, 500 ksps ADC (LTC2308); shared with Arduino analog pins | Tape-in / ADC audio add-on (§15) |
+| **LTC connector** | 2×7 (14-pin) | HPS-side I2C / SPI / UART breakout | ⭐ **RTC board** plugs in here (§14) |
+
+### 🎛️ On-board controls & indicators
+
+| Item | Count | Side | Notes |
+|------|-------|------|-------|
+| Push-buttons (**KEY0–1**) | 2 | FPGA | User buttons (debounced) |
+| Slide switches (**SW0–3**) | 4 | FPGA | User switches |
+| Green user LEDs (**LED0–7**) | 8 | FPGA | User LEDs |
+| **MSEL** DIP switch | 6-position | FPGA | Sets FPGA config mode — **leave as shipped for MiSTer** |
+| HPS reset / warm-reset + HPS user button | — | HPS | Reset the ARM/HPS |
+| G-sensor (accelerometer) | 1 | HPS | ADXL345 I2C — unused by MiSTer |
+
+> **Three things that trip people up:**
+> 1. **Only one USB host port** — the Micro-USB OTG. Everything USB funnels through it.
+>    The Mini-USB port next to it is a JTAG trap, not for peripherals (§2).
+> 2. **HDMI is the only built-in video out** — analog/CRT needs an IO board or the
+>    HDMI-to-VGA "Direct Video" trick (§11).
+> 3. **No fan header on the bare board** — fan power comes from a Digital/IO add-on board,
+>    or you wire a fan to GPIO 5V/GND pins (§7).
+
+---
+
 ## Master Checklist
 
 ### 🔴 Required — Without these, MiSTer will not run
@@ -18,7 +65,7 @@ https://mister-devel.github.io/MkDocs_MiSTer/
 | 1 | microSD card (minimum 4GB) + reader | Required |
 | 2 | USB keyboard | Required |
 | 3 | HDMI display + HDMI cable | Required |
-| 4 | USB OTG adapter **or** USB Hub Add-On Board | Required ("no USB devices will work without this") |
+| 4 | Micro-USB OTG → USB-A adapter **or** USB Hub Add-On Board | Required — DE10-Nano has no USB-A port, so USB-A devices can't plug in directly ("no USB devices will work without this") |
 | 5 | 128MB SDRAM Add-On Board | "Optional, but many cores require it" — effectively required |
 | 6 | Heatsink (20–22mm, ≤10mm tall) | Docs: "cooling for the FPGA" is recommended; community treats as mandatory |
 | 7 | 5V / 4A+ barrel-jack power supply (5.5mm/2.1mm, center positive) | Required (stock 2A supply is underpowered for full stack) |
@@ -76,19 +123,38 @@ card. Any Class 10 / UHS-I card saturates it.
 
 ## 2. USB OTG Adapter or USB Hub Board (Required)
 
-The DE10-Nano has a single Micro-USB OTG port. You need either:
+The DE10-Nano has a single **Micro-USB B (female) OTG port** and **no full-size USB-A
+host port**. (Its other USB socket is a Mini-USB B port for the USB Blaster / JTAG —
+programming only, *not* for peripherals.)
 
-- A **Micro-USB OTG adapter** (cheap, ~$2–5) — allows plugging in a single USB hub or
-  device temporarily. Fine for initial setup.
-- A **USB Hub Add-On Board** — the proper solution (see §5 below).
+> ⚠️ **Connector mismatch:** Standard USB peripherals — keyboards, hubs, gamepads — end
+> in a **USB-A male** plug, which physically cannot go into the Micro-USB OTG port. You
+> **always** need an adapter or hub board in between. There is no way to plug a USB-A
+> device directly into the DE10-Nano.
+
+You need either:
+
+- A **Micro-USB (male) → USB-A (female) OTG adapter** (cheap, ~$2–5) — lets you plug in a
+  single USB-A device (e.g. the keyboard) or a hub. Fine for initial setup.
+- A **USB Hub Add-On Board** — the proper solution; mounts to the OTG port and provides
+  multiple USB-A ports (see §8 below).
 
 ---
 
 ## 3. USB Keyboard (Required)
 
-Any standard USB keyboard works. Avoid gaming keyboards with extensive macro/anti-ghosting
+Any standard USB HID keyboard works. Avoid gaming keyboards with extensive macro/anti-ghosting
 features — they generate excessive input events that can interfere with MiSTer's input
 handling.
+
+> ⚠️ The keyboard's **USB-A male** plug cannot go directly into the DE10-Nano — see §2.
+> Connect it through a **Micro-USB OTG adapter** or the **USB Hub Add-On Board**.
+
+**Keyboards with a built-in USB hub** (e.g. the *Raspberry Pi Keyboard and Hub*) work as
+a normal HID keyboard, and their passthrough ports enumerate as a standard bus-powered
+USB 2.0 hub. They are **not** Raspberry Pi–specific. Caveat: those passthrough ports are
+*bus-powered* (drawn from the host through one cable), so keep heavy peripherals (USB
+drives, multiple controllers) off them unless you're running a strong 4–5A PSU.
 
 ---
 
