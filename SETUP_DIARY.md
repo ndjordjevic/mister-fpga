@@ -113,6 +113,59 @@ bugfixed v1.0 with no later official update) — nothing to upgrade.
 
 ---
 
+### Hotkeys learned
+- **`LShift + LCtrl + LAlt + RAlt`** — universal hotkey to reset back to the Menu core
+  (main MiSTer menu) from *any* running core. Flushes caches to disk first, so it's the
+  safe way out. Verified working from the Oric Atmos core.
+- **`F12`** — opens the current core's OSD overlay (settings/ROM selection) without
+  leaving the core.
+- **`Alt+F12`** — quick core switcher, jumps directly to another core without returning
+  to the main menu first.
+
+Source: [Hotkeys — MiSTer FPGA Documentation](https://mister-devel.github.io/MkDocs_MiSTer/basics/hotkey/)
+
+### Portable monitor (ASUS ZenScreen MB16A) — HDMI → USB-C
+Wanted to drive the MiSTer from an **ASUS ZenScreen MB16A** portable monitor. The MB16A
+has a **single USB-C port only** (no HDMI in), takes video via **DisplayPort Alt Mode**,
+and is powered **exclusively** through that same USB-C port at **5V / 3A (15W)**.
+
+The DE10-Nano only outputs HDMI, so this needs an **HDMI-source → USB-C(DP-Alt-Mode)**
+converter (the *reverse* of a normal USB-C-to-HDMI cable). Bought a **PeakDo HDMI→USB-C
+adapter** (Amazon B0C854HLRM) — it has an HDMI-female input, a USB-C output to the
+monitor, and a **side USB-C port for injecting external power** (needed because HDMI
+can't supply the monitor's 15W).
+
+**Two problems hit, both resolved:**
+1. **Blinking blue power light, no picture.** The MB16A manual attributes exactly this to
+   *"insufficient power supply"* — the monitor needs the full 15W. Fed the PeakDo's side
+   port from a proper charger.
+2. **THE ACTUAL CULPRIT: a bad USB-C cable.** Even connecting the monitor *directly* to
+   the MacBook Pro 13" gave a *"device doesn't support DP Alt Mode"* message — impossible,
+   since every USB-C MacBook Pro supports DP Alt Mode. The real cause: the USB-C cable was
+   **charge/data-only and didn't carry the DisplayPort video lanes.** Most random USB-C
+   cables don't. Swapped to a **video-capable ("full-featured") USB-C cable** and it
+   worked instantly — first verified on the Mac, then reused in the PeakDo chain.
+
+**Working chain:**
+```
+DE10-Nano HDMI-out → PeakDo adapter → [video-capable USB-C cable] → MB16A USB-C
+                          ↑
+                 USB-C charger (power injection)
+```
+
+**Lesson:** USB-C cables are not interchangeable. A charge-only cable looks identical but
+carries no video. When a DP-Alt-Mode display says "not supported" on a device that
+clearly supports it, suspect the **cable** first. (Keep the known-good cable with the
+MiSTer kit.)
+
+**Power-up order matters:** hook up the *entire* video chain and power the monitor
+**first**, then apply power to the MiSTer **last**. The DE10-Nano's HDMI transmitter runs
+its EDID/signal handshake at boot — if the display chain isn't already live, it can boot
+into a dead link and never re-negotiate (black screen). Connect everything, power the
+monitor, *then* plug in the MiSTer.
+
+---
+
 ## Open items for next session
 - Load an actual ROM/game to fully verify SDRAM under real gameplay (not just clean
   core load).
