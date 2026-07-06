@@ -146,6 +146,7 @@ and the main framework.
 | sy2002/MiSTer2MEGA65 | https://github.com/sy2002/MiSTer2MEGA65/wiki/The-Ultimate-MiSTer2MEGA65-Porting-Guide | Detailed guide for porting MiSTer cores to the MEGA65 FPGA computer |
 | adreeve/MiSTerManual | https://github.com/adreeve/MiSTerManual | Community reference manual for all platforms on MiSTer |
 | Heber-co-uk/Multisystem | https://github.com/Heber-co-uk/Multisystem | All-in-one MiSTer motherboard design |
+| **Anime0t4ku/mister-companion** | https://github.com/Anime0t4ku/mister-companion | Cross-platform (Win/Mac/Linux) desktop GUI for MiSTer — SD card flashing, SFTP file browsing, settings editor, Update_All runner, save backup/restore, RetroAchievements support; online (SSH) or offline (direct SD) modes |
 
 ---
 
